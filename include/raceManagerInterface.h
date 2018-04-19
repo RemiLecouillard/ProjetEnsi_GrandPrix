@@ -8,10 +8,26 @@
 #include <stdio.h>
 #include "util.h"
 
+/**
+ *
+ * @param race
+ * @param gasoline
+ */
 void init(Racetrack* race,int* gasoline);
 
+/**
+ *
+ * @param myDriver
+ * @param otherDriver1
+ * @param otherDriver2
+ * @return
+ */
 int updatePositions(Driver* myDriver,Driver* otherDriver1,Driver* otherDriver2);
 
+/**
+ *
+ * @param acceleration
+ */
 void sendOrder(Vector acceleration);
 
 
