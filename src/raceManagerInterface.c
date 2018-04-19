@@ -28,6 +28,7 @@ int updatePositions(Driver* myDriver,Driver* otherDriver1,Driver* otherDriver2) 
     fscanf(stdin, "%d %d\t%d %d\t%d %d", &myDriver->position.x, &myDriver->position.y, &otherDriver1->position.x,
            &otherDriver1->position.y, &otherDriver2->position.x, &otherDriver2->position.y);
     readUntilEndOfLine();
+    return 0;
 }
 
 void sendOrder(Vector acceleration) {

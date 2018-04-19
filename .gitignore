@@ -18,24 +18,60 @@
 
 # Gradle:
 .idea/**/gradle.xml
-.idea/**/libraries
+# Prerequisites
+*.d
 
-# CMake
-cmake-build-debug/
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
 
-# Mongo Explorer plugin:
-.idea/**/mongoSettings.xml
+# Linker output
+*.ilk
+*.map
+*.exp
 
-## File-based project format:
-*.iws
+# Precompiled Headers
+*.gch
+*.pch
 
-## Plugin-specific files:
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
 
-# IntelliJ
-/out/
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
 
-# mpeltonen/sbt-idea plugin
-.idea_modules/
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
 
-# JIRA plugin
-atlassian-ide-plugin.xml
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+
+doc/*
+.idea/
+cmake*
