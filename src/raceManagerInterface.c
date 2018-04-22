@@ -4,7 +4,7 @@
 
 
 #include <stdlib.h>
-#include "../include/raceManagerInterface.h"
+#include "raceManagerInterface.h"
 
 
 void readUntilEndOfLine();
