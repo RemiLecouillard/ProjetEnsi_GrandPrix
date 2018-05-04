@@ -3,14 +3,17 @@ project(ProjetEnsi_GrandPrix)
 
 set(CMAKE_CXX_STANDARD 11)
 
-include_directories(include)
+include_directories(include CCollections/include)
+LINK_DIRECTORIES(lib)
 
 set(SOURCE_FILES
         include/galileo.h
         include/raceManagerInterface.h
-        include/util.h
+        include/utils.h
         src/galileo.c
         src/main.c
-        src/raceManagerInterface.c)
+        src/raceManagerInterface.c src/graph.c include/graph.h src/utils.c src/raceManager.c include/raceManager.h src/racetrack.c include/racetrack.h src/driver.c include/driver.h)
 
 add_executable(ProjetEnsi_GrandPrix ${SOURCE_FILES})
+
+target_link_libraries(ProjetEnsi_GrandPrix CCollections)

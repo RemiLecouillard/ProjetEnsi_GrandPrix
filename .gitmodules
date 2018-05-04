@@ -1,0 +1,3 @@
+[submodule "CCollections"]
+	path = CCollections
+	url = https://github.com/pchopinet/CCollections

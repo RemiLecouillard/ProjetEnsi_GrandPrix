@@ -4,12 +4,14 @@
 
 
 #include <stdlib.h>
+#include "driver.h"
 #include "raceManagerInterface.h"
+#include "racetrack.h"
 
 
 void readUntilEndOfLine();
 
-void init(Racetrack* race,int* gasoline) {
+void init(Racetrack race,int* gasoline) {
     int i;
 
     fscanf(stdin, "%d %d %d", &race->width, &race->height, gasoline);
@@ -25,9 +27,13 @@ void init(Racetrack* race,int* gasoline) {
 }
 
 int updatePositions(Driver* myDriver,Driver* otherDriver1,Driver* otherDriver2) {
+    fflush(debug);
     fscanf(stdin, "%d %d\t%d %d\t%d %d", &myDriver->position.x, &myDriver->position.y, &otherDriver1->position.x,
            &otherDriver1->position.y, &otherDriver2->position.x, &otherDriver2->position.y);
     readUntilEndOfLine();
+    fprintf(debug, "%d %d\t%d %d\t%d %d\n", myDriver->position.x, myDriver->position.y, otherDriver1->position.x,
+            otherDriver1->position.y, otherDriver2->position.x, otherDriver2->position.y);
+    fflush(debug);
     return 0;
 }
 

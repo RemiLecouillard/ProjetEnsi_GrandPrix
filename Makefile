@@ -3,22 +3,23 @@ CC = gcc
 LDFLAGS =
 SRCDIR = src/
 OBJDIR = obj/
+LIB = -l/lib/CCollections
 SRC = $(wildcard $(SRCDIR)*.c)
 OBJ  = $(SRC:$(SRCDIR)%.c=$(OBJDIR)%.o)
-outputdir = ../GrandPrix2018_3.0.3/drivers/
+outputdir = ../GrandPrix2018/drivers/
 
 .PHONY: clean all
 
 all: $(outputdir)LecouillardDromard Makefile
 
-$(outputdir)LecouillardDromard: $(OBJ)
+$(outputdir)LecouillardDromard: $(OBJ) lib/CCollections.a
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 $(OBJDIR)%.o: $(SRCDIR)%.c
-	$(CC) -o $@ -c $< -I include/ $(CFLAGS)
+	$(CC) -o $@ -c $< -I include/ -I CCollections/include $(CFLAGS)
 
 clean :
-	rm -f *.o *~
+	rm -f $(OBJDIR)*.o $(OBJDIR)*~
 
 doc :
 	doxygen Doxyfile

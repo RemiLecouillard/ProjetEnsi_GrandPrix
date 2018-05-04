@@ -5,9 +5,7 @@
 #ifndef PROJETENSI_GRANDPRIX_UTIL_H
 #define PROJETENSI_GRANDPRIX_UTIL_H
 
-typedef struct race Racetrack;
-
-typedef struct driver Driver;
+#include <stdio.h>
 
 typedef struct point Point;
 
@@ -23,16 +21,10 @@ struct vector {
     int y;
 };
 
-struct race{
-    int width;
-    int height;
-    char** array;
-};
+FILE *debug;
 
-struct driver{
-    Point position;
-    Vector velocity;
-    int gasoline;
-};
+Point *newPoint(int x, int y);
+
+Vector *newVector(int x, int y);
 
 #endif //PROJETENSI_GRANDPRIX_UTIL_H

@@ -5,15 +5,15 @@
 #ifndef PROJETENSI_GRANDPRIX_RACEMANAGERINTERFACE_H
 #define PROJETENSI_GRANDPRIX_RACEMANAGERINTERFACE_H
 
-#include <stdio.h>
-#include "util.h"
+#include "utils.h"
+#include "racetrack.h"
 
 /**
  *
  * @param race
  * @param gasoline
  */
-void init(Racetrack* race,int* gasoline);
+void init(Racetrack race,int* gasoline);
 
 /**
  *
