@@ -8,17 +8,20 @@ Racetrack newRacetrack() {
     return malloc(sizeof(struct race));
 }
 
-Point raceGetArrival(Racetrack racetrack) {
+LinkedList raceGetArrival(Racetrack racetrack) {
     int i, j;
+    LinkedList list;
+
+    list = newLinkedList();
 
     for (i = 0; i < racetrack->height; i ++) {
         for (j = 0; j < racetrack->width; j ++) {
             if (racetrack->array[i][j] == '=') {
-                return *newPoint(j, i);
+                LinkedListAddFirst(list, newPoint(j, i));
             }
         }
     }
-    exit(1);
+    return list;
 }
 
 LinkedList raceGetPossibleDestination(Racetrack racetrack, Point point) {

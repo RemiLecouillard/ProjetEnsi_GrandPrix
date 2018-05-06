@@ -6,6 +6,7 @@
 #define PROJETENSI_GRANDPRIX_UTIL_H
 
 #include <stdio.h>
+#include <LinkedList.h>
 
 typedef struct point Point;
 
@@ -25,6 +26,12 @@ FILE *debug;
 
 Point *newPoint(int x, int y);
 
+Point createPoint(int x, int y);
+
 Vector *newVector(int x, int y);
+
+Vector createVector(int x, int y);
+
+int pointIsIn(Point point, LinkedList list);
 
 #endif //PROJETENSI_GRANDPRIX_UTIL_H

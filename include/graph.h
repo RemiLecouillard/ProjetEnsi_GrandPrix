@@ -8,6 +8,8 @@
 
 #include <LinkedList.h>
 
+#include <racetrack.h>
+
 typedef struct graph_t *Graph;
 
 typedef struct vertex_t *Vertex;

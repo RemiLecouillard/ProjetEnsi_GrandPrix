@@ -12,11 +12,11 @@ outputdir = ../GrandPrix2018/drivers/
 
 all: $(outputdir)LecouillardDromard Makefile
 
-$(outputdir)LecouillardDromard: $(OBJ) lib/CCollections.a
-	$(CC) $^ -o $@ $(LDFLAGS)
+$(outputdir)LecouillardDromard: $(OBJ)
+	$(CC) $^ -o $@ $(LDFLAGS) -Llib/ -lCCollections
 
 $(OBJDIR)%.o: $(SRCDIR)%.c
-	$(CC) -o $@ -c $< -I include/ -I CCollections/include $(CFLAGS)
+	$(CC) -o $@ -c $< -I include/ -I CCollections/include $(CFLAGS) -O2
 
 clean :
 	rm -f $(OBJDIR)*.o $(OBJDIR)*~

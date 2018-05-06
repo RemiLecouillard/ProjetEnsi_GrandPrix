@@ -18,7 +18,7 @@ struct race {
 
 Racetrack newRacetrack();
 
-Point raceGetArrival(Racetrack racetrack);
+LinkedList raceGetArrival(Racetrack racetrack);
 
 LinkedList raceGetPossibleDestination(Racetrack racetrack, Point point);
 

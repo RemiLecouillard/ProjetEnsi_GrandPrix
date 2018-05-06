@@ -14,10 +14,37 @@ Point *newPoint(int x, int y) {
     return res;
 }
 
+Point createPoint(int x, int y) {
+    Point point;
+    point.x = x;
+    point.y = y;
+    return point;
+}
+
 Vector *newVector(int x, int y) {
     Vector *res;
     res = malloc(sizeof(Vector));
     res->y = y;
     res->x = x;
     return res;
+}
+
+
+Vector createVector(int x, int y) {
+    Vector vec;
+    vec.x = x;
+    vec.y = y;
+    return vec;
+}
+
+int pointIsIn(Point point, LinkedList list) {
+    Point *tmp;
+    LinkedListResetCurrent(list);
+    while(LinkedListMoveCurrentNext(list)) {
+        tmp = LinkedListGetCurrent(list);
+        if (tmp->y == point.y && tmp->x == point.x) {
+            return 1;
+        }
+    }
+    return 0;
 }
