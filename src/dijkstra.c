@@ -12,6 +12,26 @@
 
 #include "dijkstra.h"
 
+#define _graph this->graph
+#define _source this->source
+#define _destinations this->destinations
+#define _nodesToExplore this->nodesToExplore
+#define _neighbors this->neighbors
+#define _currentVertex this->currentVertex
+#define _neighborVertex this->neighbourVertex
+#define _neighborEdge this->neighborEdge
+
+struct dijkstra {
+    Graph graph;
+    Point source;
+    LinkedList destinations; /* points */
+    PriorityQueue nodesToExplore;
+    LinkedList neighbors; /* points */
+    Point currentVertex;
+    Point neighbourVertex;
+    Edge neighborEdge;
+};
+
 void updateDistance(Graph graph,PriorityQueue nodesToExplore,Point currentVertex, Edge neighborEdge,
                     Point *neighbourVertex);
 
@@ -19,46 +39,59 @@ Stack createPath(Graph pGraph, Point point, Point source);
 
 int equalsPoint(T param1, T param2);
 
-Stack dijkstra(Graph graph,Point source,LinkedList destination) {
-    Point currentVertex, neighbourVertex;
-    PriorityQueue nodesToExplore;
-    LinkedList neighbors;
-    Edge neighborEdge;
+struct dijkstra *newDijkstra(Graph graph,Point source,LinkedList destination) {
+    struct dijkstra *this;
+    this = malloc(sizeof(struct dijkstra));
+    _graph = graph;
+    _source = source;
+    _destinations = destination;
+    _nodesToExplore = newPriorityQueue();
+    _neighbors = NULL;
+    _neighborEdge = NULL;
 
-    nodesToExplore = newPriorityQueue();
-    graphVertexSetDistance(graph, source, 0);
-    PriorityQueueAdd(nodesToExplore, &source, 0);
-    graphVertexSetInQueue(graph, source);
+    graphVertexSetDistance(graph, _source, 0);
+    PriorityQueueAdd(_nodesToExplore, &_source, 0);
+    graphVertexSetInQueue(graph, _source);
 
-    while (!PriorityQueueIsEmpty(nodesToExplore)) {
+    return this;
+}
 
-        currentVertex = *((Point*) PriorityQueuePop(nodesToExplore));
-        neighbors = graphVertexGetNeighbors(graph, currentVertex);
+Stack dijkstraFindShortestPath(struct dijkstra *this) {
+    while (!PriorityQueueIsEmpty(_nodesToExplore)) {
 
-        if (pointIsIn(currentVertex, destination)) {
-            return createPath(graph, currentVertex, source);
+        _currentVertex = *((Point*) PriorityQueuePop(_nodesToExplore));
+        _neighbors = graphVertexGetNeighbors(_graph, _currentVertex);
+
+        if (pointIsIn(_currentVertex, _destinations)) {
+            return createPath(_graph, _currentVertex, _source);
         }
 
-        while (LinkedListMoveCurrentNext(neighbors)) {
+        while (LinkedListMoveCurrentNext(_neighbors)) {
 
-            neighborEdge = LinkedListGetCurrent(neighbors);
-            neighbourVertex = neighborEdge->to;
+            _neighborEdge = LinkedListGetCurrent(_neighbors);
+            _neighborVertex = _neighborEdge->to;
 
             /* Adds Vertex in the queue to be explore */
-            if (!graphVertexIsInQueue(graph, neighbourVertex)) {
-                graphVertexSetDistance(graph, neighbourVertex, INT_MAX);
-                PriorityQueueAdd(nodesToExplore, newPoint(neighbourVertex.x, neighbourVertex.y), INT_MAX);
-                graphVertexSetInQueue(graph, neighbourVertex);
+            if (!graphVertexIsInQueue(_graph, _neighborVertex)) {
+                graphVertexSetDistance(_graph, _neighborVertex, INT_MAX);
+                PriorityQueueAdd(_nodesToExplore, newPoint(_neighborVertex.x, _neighborVertex.y), INT_MAX);
+                graphVertexSetInQueue(_graph, _neighborVertex);
             }
 
-            updateDistance(graph, nodesToExplore, currentVertex, neighborEdge, &neighbourVertex);
+            updateDistance(_graph, _nodesToExplore, _currentVertex, _neighborEdge, &_neighborVertex);
 
         }
-        LinkedListResetCurrent(neighbors);
+        LinkedListResetCurrent(_neighbors);
 
     }
 
     return NULL;
+}
+
+void dijkstraDelete(struct dijkstra *this) {
+    LinkedListDelete(_destinations);
+    PriorityQueueDelete(_nodesToExplore);
+    free(this);
 }
 
 Stack createPath(Graph graph, Point point, Point source) {

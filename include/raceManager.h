@@ -8,10 +8,10 @@
 #include "racetrack.h"
 #include "driver.h"
 
-void initDriver(Driver* driver, int gasoline);
+typedef struct racemanager *RaceManager;
 
-void displayDebug(Racetrack racetrack,int gasoline);
+RaceManager newRaceManager();
 
-void mainLoop();
+void RaceManagerMainLoop(RaceManager this);
 
 #endif //PROJETENSI_GRANDPRIX_RACEMANAGER_H

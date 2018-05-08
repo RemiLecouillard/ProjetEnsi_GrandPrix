@@ -5,13 +5,12 @@
 #ifndef PROJETENSI_GRANDPRIX_DIJKSTRA_H
 #define PROJETENSI_GRANDPRIX_DIJKSTRA_H
 
-/**
- *
- * @param graph
- * @param source
- * @param destination
- * @return
- */
-Stack dijkstra(Graph graph,Point source,LinkedList destination);
+typedef struct dijkstra *Dijkstra;
+
+struct dijkstra *newDijkstra(Graph graph,Point source,LinkedList destination);
+
+Stack dijkstraFindShortestPath(struct dijkstra *this);
+
+void dijkstraDelete(struct dijkstra *this);
 
 #endif //PROJETENSI_GRANDPRIX_DIJKSTRA_H

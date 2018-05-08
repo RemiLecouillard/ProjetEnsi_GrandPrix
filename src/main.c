@@ -8,8 +8,11 @@
 
 int main() {
     debug = fopen("debugperso.log", "w+");
+    RaceManager raceManager;
 
-    mainLoop();
+    raceManager = newRaceManager();
+
+    RaceManagerMainLoop(raceManager);
 
     return EXIT_SUCCESS;
 }

@@ -8,6 +8,12 @@
 #include "raceManagerInterface.h"
 #include "racetrack.h"
 
+struct racemanagerinterface {
+    FILE *in;
+    FILE *out;
+    Racetrack racetrack;
+};
+
 
 void readUntilEndOfLine();
 
