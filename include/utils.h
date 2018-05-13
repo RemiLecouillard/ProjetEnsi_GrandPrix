@@ -32,6 +32,10 @@ Vector *newVector(int x, int y);
 
 Vector createVector(int x, int y);
 
+int PointEquals(Point, Point);
+
 int pointIsIn(Point point, LinkedList list);
+
+Vector vectorAdd(Vector a, Vector b);
 
 #endif //PROJETENSI_GRANDPRIX_UTIL_H

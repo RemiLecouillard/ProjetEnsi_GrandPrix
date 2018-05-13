@@ -48,3 +48,16 @@ int pointIsIn(Point point, LinkedList list) {
     }
     return 0;
 }
+
+int PointEquals(Point a, Point b) {
+    return a.x == b.x && a.y == b.y;
+}
+
+Vector vectorAdd(Vector a, Vector b) {
+    Vector c;
+
+    c.y = a.y + b.y;
+    c.x = a.x + b.x;
+
+    return c;
+}

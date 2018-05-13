@@ -105,7 +105,7 @@ Stack createPath(Graph graph, Point point, Point source) {
 
     while(current->x != source.x || current->y != source.y) {
         StackAdd(stack, current);
-        graph->racetrack->array[current->y][current->x] = 'O';
+        graphVertexSetDijkstraPath(graph, *current, 1),
         tmp = graphVertexGetPrevious(graph, *current);
         current = malloc(sizeof(Point));
         *current = tmp;

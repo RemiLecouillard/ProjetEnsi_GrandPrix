@@ -6,10 +6,13 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <racetrack.h>
+#include <antColony.h>
 #include "graph.h"
 #include "utils.h"
 
 Vertex getVertex(Graph graph,Point coord);
+
+VertexVelocity getVertexVelocity(Graph graph, Point coord, Vector velocity);
 
 Graph newGraph(Racetrack racetrack) {
     int i;
@@ -45,6 +48,107 @@ LinkedList graphVertexGetNeighbors(Graph graph,Point point) {
     return getVertex(graph, point)->neighbors;
 }
 
+void graphVertexSetDijkstraPath(Graph graph, Point point, int isPath) {
+    getVertex(graph, point)->isDijkstraPath = isPath;
+}
+
+int graphVertexIsDijkstraPath(Graph graph, Point point) {
+    return getVertex(graph, point)->isDijkstraPath;
+}
+
+Vector graphGetDirectionWithMostPheromone(Graph this, Point from, Vector velocity) {
+    VertexVelocity vertexVelocity = getVertexVelocity(this, from, velocity);
+    VertexVelocity neighbour;
+    EdgeVelocity edgeVelocity;
+    int maxPheromone;
+    Vector acceleration;
+
+    acceleration.x = 0;
+    acceleration.y = 0;
+    maxPheromone = 0;
+
+    LinkedListResetCurrent(vertexVelocity->possibleDestination);
+
+    while (LinkedListMoveCurrentNext(vertexVelocity->possibleDestination)) {
+        edgeVelocity = LinkedListGetCurrent(vertexVelocity->possibleDestination);
+        neighbour = getVertexVelocity(this, edgeVelocity->to, vectorAdd(velocity, edgeVelocity->acceleration));
+
+        if (neighbour->pheromone > maxPheromone) {
+            maxPheromone = neighbour->pheromone;
+            acceleration = edgeVelocity->acceleration;
+        }
+    }
+
+
+    return acceleration;
+}
+
+LinkedList graphVertexVelocityGetNeighbors(Graph this, Point from, Vector velocity) {
+    return getVertexVelocity(this, from, velocity)->possibleDestination;
+}
+
+int graphVertexVelocityGetPheromone(Graph this, Point from, Vector velocity) {
+    return getVertexVelocity(this, from, velocity)->pheromone;
+}
+
+void graphVertexVelocitySetPheromone(Graph this, Point from, Vector velocity, int pheromone) {
+    getVertexVelocity(this, from, velocity)->pheromone = pheromone;
+}
+
+void graphVertexVelocityForEach(Graph this, void (*foreach)(VertexVelocity)) {
+    int i, j, k, l;
+
+    for (i = 0; i < this->racetrack->height; i ++) {
+        for (j = 0; j < this->racetrack->width; j ++) {
+
+            if (this->vertices[i][j]) {
+
+                for (k = 0; k < 11; k ++) {
+                    for (l = 0; l < 11; l ++) {
+
+                        if (this->vertices[i][j]->inPutVelocity[k][l]) {
+                            foreach(this->vertices[i][j]->inPutVelocity[k][l]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+VertexVelocity getVertexVelocity(Graph graph, Point coord, Vector velocity) {
+    VertexVelocity *vertex;
+    Point destination;
+    EdgeVelocity newEdge;
+    int i, j;
+    vertex = &getVertex(graph, coord)->inPutVelocity[velocity.y+5][velocity.x+5];
+
+    if (!*vertex) {
+        *vertex = malloc(sizeof(struct vertexvelocity));
+        (*vertex)->pheromone = MIN_PHEROMONE;
+        (*vertex)->possibleDestination = newLinkedList();
+
+        for (i = -1; i <= 1; i ++) {
+            for (j = -1; j <= 1; j ++) {
+                destination = createPoint(velocity.x + coord.x + i, velocity.y + coord.y + j );
+                if (!PointEquals(destination, coord)) {
+                    if (raceIsValidPosition(graph->racetrack, destination)) {
+                        newEdge = malloc(sizeof(struct edgevelocity));
+                        newEdge->to = destination;
+                        newEdge->acceleration = createVector(i, j);
+                        newEdge->gasolineCost = raceGasolineCost(graph->racetrack, coord, velocity, newEdge->acceleration);
+                        newEdge->boostCost = 0;
+                        LinkedListAddFirst((*vertex)->possibleDestination, newEdge);
+                    }
+                }
+            }
+        }
+
+    }
+
+    return *vertex;
+}
+
 Vertex getVertex(Graph graph,Point coord) {
 
     if(!graph->vertices[coord.y][coord.x]) {
@@ -68,6 +172,7 @@ Vertex getVertex(Graph graph,Point coord) {
         graph->vertices[coord.y][coord.x]->distanceFromSource = INT_MAX;
         graph->vertices[coord.y][coord.x]->isSetToExplore = 0;
         graph->vertices[coord.y][coord.x]->previousVertex = *newPoint(-1, -1);
+        graph->vertices[coord.y][coord.x]->isDijkstraPath = 0;
 
     }
 

@@ -1,6 +1,6 @@
 CFLAGS = -Wall -Wextra -pedantic-errors
 CC = gcc
-LDFLAGS =
+LDFLAGS = -lm
 SRCDIR = src/
 OBJDIR = obj/
 LIB = -l/lib/CCollections

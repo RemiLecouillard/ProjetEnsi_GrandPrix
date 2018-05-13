@@ -2,6 +2,8 @@
  * Created by remi on 30/04/18.
 */
 
+#include <math.h>
+
 #include "racetrack.h"
 
 Racetrack newRacetrack() {
@@ -61,4 +63,22 @@ int raceGetNodeCost(Racetrack race, Point from, Point to) {
     return cost;
 }
 
+int raceIsValidPosition(Racetrack race, Point coord) {
+    if (coord.x < 0 || coord.y < 0 || coord.x >= race->width || coord.y >= race->height) {
+        return 0;
+    }
 
+    return race->array[coord.y][coord.x] != '.';
+}
+
+int raceIsArrival(Racetrack race, Point coord) {
+    return race->array[coord.y][coord.x] == '=';
+}
+
+int raceGasolineCost(Racetrack race, Point coord, Vector velocity, Vector acceleration) {
+    int value = acceleration.x * acceleration.x + acceleration.y * acceleration.y;
+    value += (int)(sqrt(velocity.x * velocity.x + velocity.y * velocity.y) * 3.0 / 2.0);
+    if (race->array[coord.y][coord.x] == '~')
+        value += 1;
+    return value;
+}

@@ -44,7 +44,8 @@ RaceManager newRaceManager() {
     _ourDriver = createDriver(gasoline);
     _otherDrivers[0] = createDriver(gasoline);
     _otherDrivers[1] = createDriver(gasoline);
-    //_antColony = newAntColony(_graph);
+    _graph = newGraph(_race);
+    _antColony = newAntColony(_graph, &_ourDriver, _otherDrivers);
 
     displayDebug(_race, gasoline);
 
@@ -66,22 +67,24 @@ void displayDebug(Racetrack racetrack,int gasoline) {
     fflush(debug);
 }
 
-/*
 Vector getBestDirection(RaceManager this) {
-    Point nextPosition;
     Vector neededAcceleration;
-
-    ACsearchPath(_antColony, _ourDriver, _otherDrivers);
-
-    nextPosition = graphGetVertexWithMostPheromon(_graph, _ourDriver.position);
-
-    neededAcceleration = driverGetNeededAcceleration(&_ourDriver, nextPosition);
-
+    fprintf(debug, "*******BestDirection*******\n");
+    fflush(debug);
+    ACsearchPath(_antColony);
+    fprintf(debug, "*******searchPathOver*******\n");
+    fflush(debug);
+    neededAcceleration = graphGetDirectionWithMostPheromone(_graph, _ourDriver.position, _ourDriver.velocity);
+    fprintf(debug, "*******BestDirection over*******\n");
+    fflush(debug);
+    _ourDriver.gasoline -= raceGasolineCost(_graph->racetrack, _ourDriver.position, _ourDriver.velocity, neededAcceleration);
     driverAddAcceleration(&_ourDriver, neededAcceleration);
-
+    fprintf(debug, "*******Added to our driver*******\n");
+    fflush(debug);
     return neededAcceleration;
-}*/
+}
 
+/**
 Vector getBestDirection(RaceManager this) {
     static Stack stack = NULL;
     static Graph graph = NULL;
@@ -114,7 +117,7 @@ Vector getBestDirection(RaceManager this) {
     fflush(debug);
     driverAddAcceleration(&_ourDriver, acceleration);
     return acceleration;
-}
+}*/
 
 void RaceManagerMainLoop(RaceManager this) {
     Vector newAcceleration;

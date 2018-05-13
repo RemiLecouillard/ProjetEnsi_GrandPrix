@@ -24,4 +24,10 @@ LinkedList raceGetPossibleDestination(Racetrack racetrack, Point point);
 
 int raceGetNodeCost(Racetrack, Point, Point);
 
+int raceIsValidPosition(Racetrack, Point);
+
+int raceIsArrival(Racetrack, Point);
+
+int raceGasolineCost(Racetrack race, Point coord, Vector velocity, Vector acceleration);
+
 #endif //PROJETENSI_GRANDPRIX_RACETRACK_H

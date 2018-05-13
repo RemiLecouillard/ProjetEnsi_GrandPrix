@@ -6,11 +6,14 @@
 #define PROJETENSI_GRANDPRIX_ANTCOLONY_H
 
 #include "driver.h"
+#include "graph.h"
+
+#define MIN_PHEROMONE 10
 
 typedef struct antcolony *AntColony;
 
-AntColony newAntColony(Graph graph);
+AntColony newAntColony(Graph graph, Driver *nest, Driver walls[]);
 
-void ACsearchPath(AntColony this, Driver nest, Driver walls[]);
+void ACsearchPath(AntColony this);
 
 #endif //PROJETENSI_GRANDPRIX_ANTCOLONY_H

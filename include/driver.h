@@ -13,6 +13,7 @@ struct driver{
     Point position;
     Vector velocity;
     int gasoline;
+    int boostLeft;
 };
 
 /**
