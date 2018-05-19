@@ -72,6 +72,7 @@ int raceIsValidPosition(Racetrack race, Point coord) {
 }
 
 int raceIsArrival(Racetrack race, Point coord) {
+    if (!raceIsValidPosition(race, coord)) return 1;
     return race->array[coord.y][coord.x] == '=';
 }
 

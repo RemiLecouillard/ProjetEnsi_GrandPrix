@@ -56,15 +56,12 @@ int graphVertexIsDijkstraPath(Graph graph, Point point) {
     return getVertex(graph, point)->isDijkstraPath;
 }
 
-Vector graphGetDirectionWithMostPheromone(Graph this, Point from, Vector velocity) {
+Vector graphGetDirectionWithMostPheromone(Graph this, Point from, Vector velocity, Point *to) {
     VertexVelocity vertexVelocity = getVertexVelocity(this, from, velocity);
     VertexVelocity neighbour;
-    EdgeVelocity edgeVelocity;
+    EdgeVelocity edgeVelocity, selectedEdge = NULL;
     int maxPheromone;
-    Vector acceleration;
 
-    acceleration.x = 0;
-    acceleration.y = 0;
     maxPheromone = 0;
 
     LinkedListResetCurrent(vertexVelocity->possibleDestination);
@@ -72,15 +69,17 @@ Vector graphGetDirectionWithMostPheromone(Graph this, Point from, Vector velocit
     while (LinkedListMoveCurrentNext(vertexVelocity->possibleDestination)) {
         edgeVelocity = LinkedListGetCurrent(vertexVelocity->possibleDestination);
         neighbour = getVertexVelocity(this, edgeVelocity->to, vectorAdd(velocity, edgeVelocity->acceleration));
-
         if (neighbour->pheromone > maxPheromone) {
             maxPheromone = neighbour->pheromone;
-            acceleration = edgeVelocity->acceleration;
+            selectedEdge = edgeVelocity;
         }
+
     }
-
-
-    return acceleration;
+    if (selectedEdge) {
+        *to = selectedEdge->to;
+        return selectedEdge->acceleration;
+    }
+    return createVector(0, 0);
 }
 
 LinkedList graphVertexVelocityGetNeighbors(Graph this, Point from, Vector velocity) {
@@ -138,7 +137,7 @@ VertexVelocity getVertexVelocity(Graph graph, Point coord, Vector velocity) {
                         newEdge->acceleration = createVector(i, j);
                         newEdge->gasolineCost = raceGasolineCost(graph->racetrack, coord, velocity, newEdge->acceleration);
                         newEdge->boostCost = 0;
-                        LinkedListAddFirst((*vertex)->possibleDestination, newEdge);
+                        LinkedListAddLast((*vertex)->possibleDestination, newEdge);
                     }
                 }
             }

@@ -6,13 +6,12 @@
 #include <ArrayList.h>
 #include <Stack.h>
 #include <time.h>
-#include <dijkstra.h>
 #include "antColony.h"
 
-#define NUMBER_OF_ANTS 50
-#define PHEROMONE 20
+#define NUMBER_OF_ANTS 100
+#define PHEROMONE 30
 #define MAX_PHEROMONE 120
-#define EVAPORATION_RATE 0.7
+#define EVAPORATION_RATE 0.3
 #define NUMBER_ITERATION 5000
 
 #define _ants this->ants
@@ -26,6 +25,7 @@ typedef struct pathnode *PathNode;
 
 struct ant{
     Stack path;
+    ArrayList visited;
     Point position;
     Vector velocity;
     int gasoline;
@@ -56,6 +56,8 @@ EdgeVelocity getRandomDestination(AntColony this, Ant ant);
 
 void evaporate(VertexVelocity);
 
+int min(int a, int b);
+
 AntColony newAntColony(Graph graph, Driver *nest, Driver walls[]) {
     AntColony this;
 
@@ -65,12 +67,6 @@ AntColony newAntColony(Graph graph, Driver *nest, Driver walls[]) {
     _graph = graph;
     _nest = nest;
     _walls = walls;
-
-    Dijkstra dijkstra;
-
-    dijkstra = newDijkstra(_graph, _nest->position, raceGetArrival(_graph->racetrack));
-
-    dijkstraFindShortestPath(dijkstra);
 
     return this;
 }
@@ -111,6 +107,7 @@ void moveAnt(AntColony this,Ant ant) {
     ant->boosts -= edge->boostCost;
 
     StackAdd(ant->path, newPathNode(ant->position, ant->velocity));
+    ArrayListAppend(ant->visited, newPoint(ant->position.x, ant->position.y));
     //fprintf(debug, "finish, added to the path\n");
     //fflush(debug);
 }
@@ -152,19 +149,13 @@ void ACsearchPath(AntColony this) {
            graphVertexVelocityForEach(_graph, evaporate);
         }
     }
-    /*Point point;
-    Vector velocity;
-    Vector acceleration;
-    do {
-        acceleration = graphGetDirectionWithMostPheromone(_graph, point, velocity);
-    } while (!raceIsArrival(_graph->racetrack, point));
-*/
 }
 
 void initAnt(AntColony this, Ant ant) {
     if (ant->path) {
         StackDelete(ant->path);
     }
+    ant->visited = newArrayList(sizeof(Point));
     ant->path = newStack();
     ant->gasoline = _nest->gasoline;
     ant->boosts = _nest->boostLeft;
@@ -179,16 +170,17 @@ int isDead(Ant ant) {
 void backToNest(AntColony this, Ant ant) {
     PathNode path = NULL;
     int pheromone;
-    fprintf(debug, "path found !!! gasoline %d \n", ant->gasoline);
+    //fprintf(debug, "path found !!! gasoline %d \n", ant->gasoline);
 
     while(!StackIsEmpty(ant->path)) {
         path = StackPop(ant->path);
-        pheromone = ( graphVertexVelocityGetPheromone(_graph, path->point, path->velocity) + PHEROMONE ) % MAX_PHEROMONE;
+        pheromone = ( graphVertexVelocityGetPheromone(_graph, path->point, path->velocity) + PHEROMONE );
+        pheromone = min(pheromone, MAX_PHEROMONE);
         graphVertexVelocitySetPheromone(_graph, path->point, path->velocity, pheromone);
         free(path);
     }
 
-    fflush(debug);
+    //fflush(debug);
     initAnt(this, ant);
 }
 
@@ -209,6 +201,7 @@ EdgeVelocity getRandomDestination(AntColony this, Ant ant) {
     int choice;
     int total;
     int i;
+    int heuristic, increment;
     int array[25]; /* maximum destination possible */
 
     total = 0;
@@ -226,13 +219,20 @@ EdgeVelocity getRandomDestination(AntColony this, Ant ant) {
 
     while (LinkedListMoveCurrentNext(neighbors)) {
         edge = (EdgeVelocity) LinkedListGetCurrent(neighbors);
-        total += graphVertexVelocityGetPheromone(_graph, edge->to, vectorAdd(ant->velocity, edge->acceleration))
-                *( graphVertexIsDijkstraPath(_graph, edge->to) == 1 ? 4 : 1);
+        if (!ArrayListContainsValue(ant->visited, newPoint(edge->to.x, edge->to.y))) {
+            if (graphVertexIsDijkstraPath(_graph, edge->to) == 1) {
+                heuristic = 4;
+            } else {
+                heuristic = 1;
+            }
+            increment = graphVertexVelocityGetPheromone(_graph, edge->to, vectorAdd(ant->velocity, edge->acceleration)) * heuristic;
+            total += min(increment, MAX_PHEROMONE);
+        }
         array[i++] = total;
-        fprintf(debug, "|%d|", array[i-1]);
+        //fprintf(debug, "|%d|", array[i-1]);
     }
-    fprintf(debug, "\n");
-    fflush(debug);
+    //fprintf(debug, "\n");
+    //fflush(debug);
 
     if (total == 0) {
         return NULL;
@@ -240,16 +240,16 @@ EdgeVelocity getRandomDestination(AntColony this, Ant ant) {
 
     choice = rand() % total;
 
-    fprintf(debug, "total -> %d random -> %d\n", total, choice);
-    fflush(debug);
+    //fprintf(debug, "total -> %d random -> %d\n", total, choice);
+    //fflush(debug);
 
     for (i = i - 1; i > 0; i --) {
         if (array[i - 1] <= choice)
             break;
     }
 
-    fprintf(debug, "index -> %d\n", i);
-    fflush(debug);
+    //fprintf(debug, "index -> %d\n", i);
+    //fflush(debug);
 
     return (EdgeVelocity) LinkedListGetAtIndex(neighbors, i);
 }
@@ -260,4 +260,8 @@ void evaporate(VertexVelocity vertex) {
     if (vertex->pheromone < MIN_PHEROMONE) {
         vertex->pheromone = MIN_PHEROMONE;
     }
+}
+
+int min(int a, int b) {
+    return a > b ? b : a;
 }

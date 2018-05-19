@@ -71,7 +71,7 @@ void graphVertexSetDijkstraPath(Graph, Point, int);
 
 int graphVertexIsDijkstraPath(Graph, Point);
 
-Vector graphGetDirectionWithMostPheromone(Graph this, Point from, Vector velocity);
+Vector graphGetDirectionWithMostPheromone(Graph this, Point from, Vector velocity, Point *to);
 
 LinkedList graphVertexVelocityGetNeighbors(Graph this, Point from, Vector velocity);
 
