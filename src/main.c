@@ -9,6 +9,7 @@
 int main() {
     debug = fopen("debugperso.log", "w+");
     RaceManager raceManager;
+    (void)freopen("error.log", "w+", stderr);
 
     raceManager = newRaceManager();
 

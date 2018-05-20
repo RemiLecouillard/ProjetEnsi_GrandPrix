@@ -7,6 +7,7 @@
 
 #include <LinkedList.h>
 #include "utils.h"
+#include "driver.h"
 
 typedef struct race *Racetrack;
 
@@ -29,5 +30,9 @@ int raceIsValidPosition(Racetrack, Point);
 int raceIsArrival(Racetrack, Point);
 
 int raceGasolineCost(Racetrack race, Point coord, Vector velocity, Vector acceleration);
+
+int raceIsPathPosssible(Racetrack race, Point from, Point to);
+
+int raceNoCollision(Point from, Driver walls[], Point to);
 
 #endif //PROJETENSI_GRANDPRIX_RACETRACK_H

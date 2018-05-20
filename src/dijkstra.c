@@ -20,12 +20,14 @@
 #define _currentVertex this->currentVertex
 #define _neighborVertex this->neighbourVertex
 #define _neighborEdge this->neighborEdge
+#define _walls this->walls
 
 struct dijkstra {
     Graph graph;
     Point source;
     LinkedList destinations; /* points */
     PriorityQueue nodesToExplore;
+    Driver* walls;
     LinkedList neighbors; /* points */
     Point currentVertex;
     Point neighbourVertex;
@@ -39,7 +41,7 @@ Stack createPath(Graph pGraph, Point point, Point source);
 
 int equalsPoint(T param1, T param2);
 
-struct dijkstra *newDijkstra(Graph graph,Point source,LinkedList destination) {
+struct dijkstra *newDijkstra(Graph graph,Point source,LinkedList destination, Driver* walls) {
     struct dijkstra *this;
     this = malloc(sizeof(struct dijkstra));
     _graph = graph;
@@ -48,7 +50,9 @@ struct dijkstra *newDijkstra(Graph graph,Point source,LinkedList destination) {
     _nodesToExplore = newPriorityQueue();
     _neighbors = NULL;
     _neighborEdge = NULL;
+    _walls = walls;
 
+    graphInitDijkstra(_graph);
     graphVertexSetDistance(graph, _source, 0);
     PriorityQueueAdd(_nodesToExplore, &_source, 0);
     graphVertexSetInQueue(graph, _source);
@@ -58,7 +62,6 @@ struct dijkstra *newDijkstra(Graph graph,Point source,LinkedList destination) {
 
 Stack dijkstraFindShortestPath(struct dijkstra *this) {
     while (!PriorityQueueIsEmpty(_nodesToExplore)) {
-
         _currentVertex = *((Point*) PriorityQueuePop(_nodesToExplore));
         _neighbors = graphVertexGetNeighbors(_graph, _currentVertex);
 
@@ -66,10 +69,18 @@ Stack dijkstraFindShortestPath(struct dijkstra *this) {
             return createPath(_graph, _currentVertex, _source);
         }
 
+        LinkedListResetCurrent(_neighbors);
         while (LinkedListMoveCurrentNext(_neighbors)) {
 
             _neighborEdge = LinkedListGetCurrent(_neighbors);
             _neighborVertex = _neighborEdge->to;
+
+            if (_walls != NULL) {
+                if (PointEquals(_walls[0].position, _neighborEdge->to) ||
+                    PointEquals(_walls[1].position, _neighborEdge->to)) {
+                    continue;
+                }
+            }
 
             /* Adds Vertex in the queue to be explore */
             if (!graphVertexIsInQueue(_graph, _neighborVertex)) {
@@ -79,9 +90,7 @@ Stack dijkstraFindShortestPath(struct dijkstra *this) {
             }
 
             updateDistance(_graph, _nodesToExplore, _currentVertex, _neighborEdge, &_neighborVertex);
-
         }
-        LinkedListResetCurrent(_neighbors);
 
     }
 

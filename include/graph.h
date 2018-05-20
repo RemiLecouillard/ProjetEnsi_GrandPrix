@@ -41,7 +41,9 @@ struct edge_t {
 
 struct vertexvelocity {
     LinkedList possibleDestination;
+#ifdef ANT
     int pheromone;
+#endif
 };
 
 struct edgevelocity {
@@ -71,14 +73,18 @@ void graphVertexSetDijkstraPath(Graph, Point, int);
 
 int graphVertexIsDijkstraPath(Graph, Point);
 
-Vector graphGetDirectionWithMostPheromone(Graph this, Point from, Vector velocity, Point *to);
+void graphInitDijkstra(Graph);
 
 LinkedList graphVertexVelocityGetNeighbors(Graph this, Point from, Vector velocity);
+
+void graphVertexVelocityForEach(Graph this, void (*foreach)(VertexVelocity));
+
+#ifdef ANT
+Vector graphGetDirectionWithMostPheromone(Graph this, Point from, Vector velocity, Point *to);
 
 int graphVertexVelocityGetPheromone(Graph this, Point from, Vector velocity);
 
 void graphVertexVelocitySetPheromone(Graph this, Point from, Vector velocity, int pheromone);
-
-void graphVertexVelocityForEach(Graph this, void (*foreach)(VertexVelocity));
+#endif
 
 #endif //PROJETENSI_GRANDPRIX_GRAPH_H

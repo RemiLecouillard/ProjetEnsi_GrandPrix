@@ -19,6 +19,7 @@ Driver createDriver(int gasoline) {
     driver.velocity= createVector(0, 0);
     driver.gasoline = gasoline;
     driver.boostLeft = 5;
+    driver.position =  createPoint(-1, -1);
     return driver;
 }
 

@@ -3,6 +3,7 @@
 */
 
 #include <malloc.h>
+#include <math.h>
 #include "utils.h"
 
 
@@ -60,4 +61,8 @@ Vector vectorAdd(Vector a, Vector b) {
     c.x = a.x + b.x;
 
     return c;
+}
+
+float vectorNorm(Vector a) {
+    return sqrtf(a.x*a.x + a.y*a.y);
 }

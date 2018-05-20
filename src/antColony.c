@@ -8,8 +8,8 @@
 #include <time.h>
 #include "antColony.h"
 
-#define NUMBER_OF_ANTS 100
-#define PHEROMONE 30
+#define NUMBER_OF_ANTS 200
+#define PHEROMONE 400
 #define MAX_PHEROMONE 120
 #define EVAPORATION_RATE 0.3
 #define NUMBER_ITERATION 5000
@@ -19,6 +19,7 @@
 #define _nest this->nest
 #define _walls this->walls
 
+#ifdef ANT
 typedef struct ant *Ant;
 
 typedef struct pathnode *PathNode;
@@ -129,9 +130,11 @@ void ACmoveAnts(AntColony this, int firstAnt, int lastAnt) {
 
 void ACsearchPath(AntColony this) {
     int i;
+    clock_t begin;
 
     //fprintf(debug, "Init ants\n");
     //fflush(debug);
+    begin = clock();
 
     for (i = 0; i < NUMBER_OF_ANTS; i ++) {
         initAnt(this, &_ants[i]);
@@ -143,17 +146,23 @@ void ACsearchPath(AntColony this) {
     //fflush(debug);
     srand(time(NULL));
 
-    while(i--) {
+    while(clock() - begin < CLOCKS_PER_SEC*0.9) {
         ACmoveAnts(this, 0, NUMBER_OF_ANTS);
+        i++;
         if (i % 20 == 0) {
            graphVertexVelocityForEach(_graph, evaporate);
         }
     }
+
+    fprintf(debug, "number of iteration %d\n", i);
 }
 
 void initAnt(AntColony this, Ant ant) {
     if (ant->path) {
         StackDelete(ant->path);
+    }
+    if (ant->visited) {
+        ArrayListDelete(ant->visited);
     }
     ant->visited = newArrayList(sizeof(Point));
     ant->path = newStack();
@@ -170,17 +179,17 @@ int isDead(Ant ant) {
 void backToNest(AntColony this, Ant ant) {
     PathNode path = NULL;
     int pheromone;
-    //fprintf(debug, "path found !!! gasoline %d \n", ant->gasoline);
+    fprintf(debug, "path found !!! gasoline %d \n", ant->gasoline);
 
     while(!StackIsEmpty(ant->path)) {
         path = StackPop(ant->path);
-        pheromone = ( graphVertexVelocityGetPheromone(_graph, path->point, path->velocity) + PHEROMONE );
+        pheromone = ( graphVertexVelocityGetPheromone(_graph, path->point, path->velocity) + (PHEROMONE /(int)ArrayListGetLength(ant->visited)));
         pheromone = min(pheromone, MAX_PHEROMONE);
         graphVertexVelocitySetPheromone(_graph, path->point, path->velocity, pheromone);
         free(path);
     }
 
-    //fflush(debug);
+    fflush(debug);
     initAnt(this, ant);
 }
 
@@ -207,8 +216,6 @@ EdgeVelocity getRandomDestination(AntColony this, Ant ant) {
     total = 0;
     i = 0;
 
-    //fprintf(debug, "ici\n");
-    //fflush(debug);
     neighbors = graphVertexVelocityGetNeighbors(_graph, ant->position, ant->velocity);
 
     LinkedListResetCurrent(neighbors);
@@ -220,19 +227,13 @@ EdgeVelocity getRandomDestination(AntColony this, Ant ant) {
     while (LinkedListMoveCurrentNext(neighbors)) {
         edge = (EdgeVelocity) LinkedListGetCurrent(neighbors);
         if (!ArrayListContainsValue(ant->visited, newPoint(edge->to.x, edge->to.y))) {
-            if (graphVertexIsDijkstraPath(_graph, edge->to) == 1) {
-                heuristic = 4;
-            } else {
-                heuristic = 1;
-            }
+            heuristic = graphVertexIsDijkstraPath(_graph, edge->to) == 1 ? 4 : 1;
+            heuristic *= edge->acceleration.x == 1 ? 4 : 1;
             increment = graphVertexVelocityGetPheromone(_graph, edge->to, vectorAdd(ant->velocity, edge->acceleration)) * heuristic;
             total += min(increment, MAX_PHEROMONE);
         }
         array[i++] = total;
-        //fprintf(debug, "|%d|", array[i-1]);
     }
-    //fprintf(debug, "\n");
-    //fflush(debug);
 
     if (total == 0) {
         return NULL;
@@ -240,28 +241,20 @@ EdgeVelocity getRandomDestination(AntColony this, Ant ant) {
 
     choice = rand() % total;
 
-    //fprintf(debug, "total -> %d random -> %d\n", total, choice);
-    //fflush(debug);
-
     for (i = i - 1; i > 0; i --) {
         if (array[i - 1] <= choice)
             break;
     }
 
-    //fprintf(debug, "index -> %d\n", i);
-    //fflush(debug);
-
     return (EdgeVelocity) LinkedListGetAtIndex(neighbors, i);
 }
 
 void evaporate(VertexVelocity vertex) {
-    vertex->pheromone = (int) vertex->pheromone * EVAPORATION_RATE;
-
-    if (vertex->pheromone < MIN_PHEROMONE) {
-        vertex->pheromone = MIN_PHEROMONE;
-    }
+    vertex->pheromone = (int) (vertex->pheromone - MIN_PHEROMONE) * EVAPORATION_RATE + MIN_PHEROMONE;
 }
 
 int min(int a, int b) {
     return a > b ? b : a;
 }
+
+#endif

@@ -38,4 +38,6 @@ int pointIsIn(Point point, LinkedList list);
 
 Vector vectorAdd(Vector a, Vector b);
 
+float vectorNorm(Vector a);
+
 #endif //PROJETENSI_GRANDPRIX_UTIL_H
