@@ -11,31 +11,49 @@
 #include <math.h>
 #include <assert.h>
 
-#define DEPTH 6
+#define DEPTH 7
+
+#define _to ((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->to
+#define _acceleration ((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->acceleration
+#define _newVelocity vectorAdd(velocity, _acceleration)
+#define _newGasoline (gasoline - raceGasolineCost(g->racetrack, position, velocity, _acceleration))
+
+struct possibility {
+    int distance;
+    int gasoline;
+};
+
+Possibility createPossibility(int distance,int gasoline);
+
+int isBetter(Possibility a, Possibility b);
 
 Point depthGetWay(Graph g, Driver* us, Driver others[]) {
-   
    Point nextPosition; 
    Point bestWay = createPoint(-1, -1);
-   int distance;
-   int lowerDistance;
    Vector nextVelocity;
    LinkedList accessibleNeighbours;
-   
-   lowerDistance = INT_MAX;
-   accessibleNeighbours = graphVertexVelocityGetNeighbors(g, us->position, us->velocity);
-   LinkedListResetCurrent(accessibleNeighbours);
+   Possibility possibility, bestPossibility;
+   int gasolineCost;
 
+
+   bestPossibility = createPossibility(INT_MAX, INT_MAX);
+   accessibleNeighbours = graphVertexVelocityGetNeighbors(g, us->position, us->velocity);
+
+   LinkedListResetCurrent(accessibleNeighbours);
    while (LinkedListMoveCurrentNext(accessibleNeighbours)) {
       
       nextPosition = ((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->to;
 
       if(raceNoCollision(us->position, others, nextPosition)) {
-          nextVelocity = vectorAdd(us->velocity, ((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->acceleration);
-          distance = tryThisWay(g, nextPosition, nextVelocity, DEPTH);
 
-          if(distance < lowerDistance) {
-              lowerDistance = distance;
+          nextVelocity = vectorAdd(us->velocity, _acceleration);
+          if (graphVertexGetDistance(g, _to) >= graphVertexGetDistance(g, us->position))
+              continue;
+          gasolineCost = us->gasoline - raceGasolineCost(g->racetrack, us->position, us->velocity, _acceleration);
+          possibility = tryThisWay(g, nextPosition, nextVelocity, DEPTH, gasolineCost);
+
+          if(isBetter(possibility, bestPossibility)) {
+              bestPossibility = possibility;
               bestWay = nextPosition;
           }
       }
@@ -44,29 +62,61 @@ Point depthGetWay(Graph g, Driver* us, Driver others[]) {
    return bestWay;
 }
 
-int tryThisWay(Graph g, Point position, Vector velocity, int iteration) {
-   int distance;
-   int lowerDistance;
+Possibility tryThisWay(Graph g, Point position, Vector velocity, int iteration, int gasoline) {
    LinkedList accessibleNeighbours;
-   lowerDistance = INT_MAX;
-   accessibleNeighbours = graphVertexVelocityGetNeighbors(g, position, velocity);
+   Possibility bestPossibility, possibility;
 
-   if(!iteration) {
-       return graphVertexGetDistance(g, position);
+   accessibleNeighbours = graphVertexVelocityGetNeighbors(g, position, velocity);
+   bestPossibility = createPossibility(INT_MAX, gasoline);
+
+   if (gasoline <= 0) {
+       return createPossibility(INT_MAX, INT_MAX);
    }
 
-   if (raceIsArrival(g->racetrack, position)) {
-       return 0-iteration;
+    if (raceIsArrival(g->racetrack, position)) {
+        return createPossibility(0-iteration, gasoline);
+    }
+
+   if(!iteration) {
+       return createPossibility(graphVertexGetDistance(g, position), gasoline);
    }
 
    LinkedListResetCurrent(accessibleNeighbours);
    while (LinkedListMoveCurrentNext(accessibleNeighbours)) {
-       distance = tryThisWay(g, ((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->to, vectorAdd(velocity,((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->acceleration) , iteration - 1);
 
-       if(distance < lowerDistance) {
-          lowerDistance = distance;
+       if (graphVertexGetDistance(g, _to) >= graphVertexGetDistance(g, position))
+           continue;
+
+       possibility = tryThisWay(g, _to, _newVelocity , iteration - 1, _newGasoline);
+
+       if(isBetter(possibility, bestPossibility)) {
+          bestPossibility = possibility;
        }
    }
 
-   return lowerDistance;
+   return bestPossibility;
+}
+
+
+Possibility createPossibility(int distance,int gasoline) {
+    Possibility new;
+    new.gasoline = gasoline;
+    new.distance = distance;
+    return new;
+}
+
+int isBetter(Possibility a, Possibility b) {
+
+    if (a.distance < b.distance) {
+        return 1;
+    } else if (a.distance > b.distance) {
+        return 0;
+    }
+
+    if (a.gasoline > b.gasoline) {
+        return 1;
+    } else if (a.gasoline < b.gasoline) {
+        return 0;
+    }
+    return 1;
 }

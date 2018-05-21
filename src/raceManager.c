@@ -132,11 +132,14 @@ Point getNext(RaceManager this) {
 #ifndef ANT
 Vector getBestDirection(RaceManager this) {
     Point next;
+    clock_t begin;
     Vector acceleration;
 
+    begin = clock();
     next = depthGetWay(_graph, &_ourDriver, _otherDrivers);
-
+    fprintf(debug, "time taken %1.5f\n",  ((float)(clock() - begin) / CLOCKS_PER_SEC));
     acceleration = driverGetNeededAcceleration(&_ourDriver, next);
+    _ourDriver.gasoline -= raceGasolineCost(_race, _ourDriver.position, _ourDriver.velocity, acceleration);
 
     displayTurn(this, next, acceleration);
 
