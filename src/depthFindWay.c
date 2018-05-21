@@ -55,7 +55,7 @@ int tryThisWay(Graph g, Point position, Vector velocity, int iteration) {
    }
    
    while (LinkedListMoveCurrentNext(accessibleNeighbours)) {
-      distance = tryThisWay(g, ((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->to, vectorAdd(velocity,((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->acceleration) , --iteration);
+      distance = tryThisWay(g, ((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->to, vectorAdd(velocity,((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->acceleration) , iteration-1);
 
       if(distance < lowerDistance) {
 	 lowerDistance = distance; 
