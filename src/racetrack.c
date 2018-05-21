@@ -189,8 +189,19 @@ int raceGasolineCost(Racetrack race, Point coord, Vector velocity, Vector accele
 int raceIsPathPosssible(Racetrack race, Point from, Point to) {
     infoLine vline;
     pos2Dint p;
+    float norm;
 
-    if (vectorNorm(createVector(to.x - from.x, to.y - from.y)) > 5) {
+    if(!raceIsValidPosition(race, to)) {
+        return 0;
+    }
+
+    norm = vectorNorm(createVector(to.x - from.x, to.y - from.y));
+
+    if (norm > 5.) {
+        return 0;
+    }
+
+    if (race->array[from.y][from.x] == SAND && norm > 1.) {
         return 0;
     }
 

@@ -6,6 +6,9 @@
 #define PROJETENSI_GRANDPRIX_POSSIBILITYTREE_H
 
 
-void foo();
+#include <Stack.h>
+#include "graph.h"
+
+Stack shortestPath(Graph graph, Driver start, Driver* walls);
 
 #endif //PROJETENSI_GRANDPRIX_POSSIBILITYTREE_H
