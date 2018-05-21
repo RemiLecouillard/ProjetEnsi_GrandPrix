@@ -73,8 +73,9 @@ void displayDebug(RaceManager this,int gasoline) {
     for (int i = 0; i < _race->height; i++) {
         for(int j = 0; j < _race->width; j++) {
             if (_race->array[i][j] == '#')
-                fprintf(debug, "%4c", graphVertexGetDistance(_graph, createPoint(j, i)));
-            fprintf(debug, "%4c", _race->array[i][j]);
+                fprintf(debug, "%4d", graphVertexGetDistance(_graph, createPoint(j, i)));
+            else
+                fprintf(debug, "%4c", _race->array[i][j]);
         }
         fprintf(debug, "\n");
     }
