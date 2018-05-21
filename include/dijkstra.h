@@ -7,9 +7,9 @@
 
 typedef struct dijkstra *Dijkstra;
 
-struct dijkstra *newDijkstra(Graph graph,Point source,LinkedList destination, Driver walls[]);
+struct dijkstra *newDijkstra(Graph graph,LinkedList source,LinkedList destination, Driver walls[]);
 
-Stack dijkstraFindShortestPath(struct dijkstra *this);
+void dijkstraFindShortestPath(struct dijkstra *this);
 
 void dijkstraDelete(struct dijkstra *this);
 

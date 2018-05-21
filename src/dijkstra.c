@@ -24,7 +24,7 @@
 
 struct dijkstra {
     Graph graph;
-    Point source;
+    LinkedList source;
     LinkedList destinations; /* points */
     PriorityQueue nodesToExplore;
     Driver* walls;
@@ -41,8 +41,9 @@ Stack createPath(Graph pGraph, Point point, Point source);
 
 int equalsPoint(T param1, T param2);
 
-struct dijkstra *newDijkstra(Graph graph,Point source,LinkedList destination, Driver* walls) {
+struct dijkstra *newDijkstra(Graph graph,LinkedList source,LinkedList destination, Driver* walls) {
     struct dijkstra *this;
+    Point *current;
     this = malloc(sizeof(struct dijkstra));
     _graph = graph;
     _source = source;
@@ -53,21 +54,25 @@ struct dijkstra *newDijkstra(Graph graph,Point source,LinkedList destination, Dr
     _walls = walls;
 
     graphInitDijkstra(_graph);
-    graphVertexSetDistance(graph, _source, 0);
-    PriorityQueueAdd(_nodesToExplore, &_source, 0);
-    graphVertexSetInQueue(graph, _source);
+
+    LinkedListResetCurrent(source);
+    while(LinkedListMoveCurrentNext(source)) {
+        current = LinkedListGetCurrent(source);
+        graphVertexSetDistance(graph, *current, 0);
+        PriorityQueueAdd(_nodesToExplore, current, 0);
+        graphVertexSetInQueue(graph, *current);
+    }
 
     return this;
 }
 
-Stack dijkstraFindShortestPath(struct dijkstra *this) {
+void dijkstraFindShortestPath(struct dijkstra *this) {
+
     while (!PriorityQueueIsEmpty(_nodesToExplore)) {
+
         _currentVertex = *((Point*) PriorityQueuePop(_nodesToExplore));
         _neighbors = graphVertexGetNeighbors(_graph, _currentVertex);
 
-        if (pointIsIn(_currentVertex, _destinations)) {
-            return createPath(_graph, _currentVertex, _source);
-        }
 
         LinkedListResetCurrent(_neighbors);
         while (LinkedListMoveCurrentNext(_neighbors)) {
@@ -78,27 +83,32 @@ Stack dijkstraFindShortestPath(struct dijkstra *this) {
             if (_walls != NULL) {
                 if (PointEquals(_walls[0].position, _neighborEdge->to) ||
                     PointEquals(_walls[1].position, _neighborEdge->to)) {
+
                     continue;
                 }
             }
 
             /* Adds Vertex in the queue to be explore */
             if (!graphVertexIsInQueue(_graph, _neighborVertex)) {
+
                 graphVertexSetDistance(_graph, _neighborVertex, INT_MAX);
                 PriorityQueueAdd(_nodesToExplore, newPoint(_neighborVertex.x, _neighborVertex.y), INT_MAX);
                 graphVertexSetInQueue(_graph, _neighborVertex);
             }
 
             updateDistance(_graph, _nodesToExplore, _currentVertex, _neighborEdge, &_neighborVertex);
+
         }
 
     }
 
-    return NULL;
 }
 
 void dijkstraDelete(struct dijkstra *this) {
-    LinkedListDelete(_destinations);
+    if (_destinations != NULL)
+        LinkedListDelete(_destinations);
+    if (_source != NULL)
+        LinkedListDelete(_source);
     PriorityQueueDelete(_nodesToExplore);
     free(this);
 }

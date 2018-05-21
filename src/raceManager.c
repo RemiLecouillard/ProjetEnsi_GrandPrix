@@ -14,6 +14,7 @@
 #include <raceManager.h>
 #include <antColony.h>
 #include <assert.h>
+#include <limits.h>
 
 #define _race this->racetrack
 #define _graph this->graph
@@ -21,21 +22,19 @@
 #define _otherDrivers this->otherDrivers
 #define _antColony this->antColony
 #define _turn this->turn
-#define _path this->path
 
 struct racemanager {
     Racetrack racetrack;
     Graph graph;
     Driver ourDriver;
     Driver otherDrivers[2];
-    Stack path;
 #ifdef ANT
     AntColony antColony;
 #endif
     int turn;
 };
 
-void displayDebug(Racetrack racetrack,int gasoline);
+void displayDebug(RaceManager this,int gasoline);
 
 void displayTurn(RaceManager this, Point next, Vector acceleration);
 
@@ -44,6 +43,7 @@ Vector getBestDirection(RaceManager this);
 RaceManager newRaceManager() {
     RaceManager this = malloc(sizeof(struct racemanager));
     int gasoline;
+    Dijkstra dijkstra;
 
     _race = newRacetrack();
     init(_race, &gasoline);
@@ -57,19 +57,24 @@ RaceManager newRaceManager() {
     _antColony = newAntColony(_graph, &_ourDriver, _otherDrivers);
 #endif
 
-    displayDebug(_race, gasoline);
+    dijkstra = newDijkstra(_graph,raceGetArrival(_race),  NULL, NULL);
+    dijkstraFindShortestPath(dijkstra);
+    dijkstraDelete(dijkstra);
+    displayDebug(this, gasoline);
 
     return this;
 }
 
-void displayDebug(Racetrack racetrack,int gasoline) {
+void displayDebug(RaceManager this,int gasoline) {
     fprintf(debug, " === >Carte< === \n");
-    fprintf(debug, "taille %d x %d\n", racetrack->width, racetrack->height);
+    fprintf(debug, "taille %d x %d\n", _race->width, _race->height);
     fprintf(debug, "Carburant de départ %d \n\n", gasoline);
 
-    for (int i = 0; i < racetrack->height; i++) {
-        for(int j = 0; j < racetrack->width; j++) {
-            fprintf(debug, "%c", racetrack->array[i][j]);
+    for (int i = 0; i < _race->height; i++) {
+        for(int j = 0; j < _race->width; j++) {
+            if (_race->array[i][j] == '#')
+                fprintf(debug, "%4c", graphVertexGetDistance(_graph, createPoint(j, i)));
+            fprintf(debug, "%4c", _race->array[i][j]);
         }
         fprintf(debug, "\n");
     }
@@ -99,32 +104,35 @@ void RaceManagerMainLoop(RaceManager this) {
 
 }
 
+Point getNext(RaceManager this) {
+    int best, tmp;
+    Edge edge;
+    LinkedList dest;
+    Point bestDest;
+
+    best = INT_MAX;
+    dest = graphVertexGetNeighbors(_graph, _ourDriver.position);
+    LinkedListResetCurrent(dest);
+
+    while(LinkedListMoveCurrentNext(dest)) {
+        edge = LinkedListGetCurrent(dest);
+
+        tmp = graphVertexGetDistance(_graph, edge->to);
+
+        if (tmp < best) {
+            bestDest = edge->to;
+        }
+    }
+
+    return bestDest;
+}
+
 #ifndef ANT
 Vector getBestDirection(RaceManager this) {
-    Dijkstra dijkstra;
-    Point *tmp, next;
+    Point next;
     Vector acceleration;
 
-    if (!_path) {
-        dijkstra = newDijkstra(_graph, _ourDriver.position, raceGetArrival(_race), NULL);
-        _path = dijkstraFindShortestPath(dijkstra);
-        dijkstraDelete(dijkstra);
-    }
-
-    tmp = StackPop(_path);
-    next = *tmp;
-    free(tmp);
-
-    if (!raceNoCollision(_ourDriver.position, _otherDrivers, next)) {
-        StackDelete(_path);
-        dijkstra = newDijkstra(_graph, _ourDriver.position, raceGetArrival(_race), _otherDrivers);
-        _path = dijkstraFindShortestPath(dijkstra);
-        dijkstraDelete(dijkstra);
-
-        tmp = StackPop(_path);
-        next = *tmp;
-        free(tmp);
-    }
+    next = getNext(this);
 
     acceleration = driverGetNeededAcceleration(&_ourDriver, next);
 

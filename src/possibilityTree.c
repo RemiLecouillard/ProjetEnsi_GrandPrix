@@ -62,8 +62,8 @@ Stack shortestPath(Graph graph, Driver start, Driver* walls) {
     begin = clock();
     fprintf(debug, "TREE !!!!!!!!!!!!!!!!!!!\n");
     fflush(debug);
-    dijkstra = newDijkstra(graph, start.position, raceGetArrival(graph->racetrack), walls);
-    path = dijkstraFindShortestPath(dijkstra);
+    //dijkstra = newDijkstra(graph, start.position, raceGetArrival(graph->racetrack), walls);
+    //path = dijkstraFindShortestPath(dijkstra);
     dijkstraDelete(dijkstra);
 
     norm = getNorm(graph->racetrack, path, start.gasoline, start);
