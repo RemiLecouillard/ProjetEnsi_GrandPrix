@@ -7,7 +7,7 @@
 
 #include "utils.h"
 
-Point depthGetWay(Graph g, Driver* us, Driver others[])
+Point depthGetWay(Graph g, Driver* us, Driver others[]);
 int tryThisWay(Graph g, Point position, Vector velocity, int iteration);
 
 #endif //PROJETENSI_GRANDPRIX_DPETHFINDWAY_H
