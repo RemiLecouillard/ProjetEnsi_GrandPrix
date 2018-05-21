@@ -11,12 +11,12 @@
 #include <math.h>
 #include <assert.h>
 
-#define DEPTH 7
+#define DEPTH 6
 
 Point depthGetWay(Graph g, Driver* us, Driver others[]) {
    
    Point nextPosition; 
-   Point bestWay;
+   Point bestWay = createPoint(-1, -1);
    int distance;
    int lowerDistance;
    Vector nextVelocity;
@@ -25,25 +25,26 @@ Point depthGetWay(Graph g, Driver* us, Driver others[]) {
    lowerDistance = INT_MAX;
    accessibleNeighbours = graphVertexVelocityGetNeighbors(g, us->position, us->velocity);
    LinkedListResetCurrent(accessibleNeighbours);
-   
+
    while (LinkedListMoveCurrentNext(accessibleNeighbours)) {
       
       nextPosition = ((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->to;
+
       if(raceNoCollision(us->position, others, nextPosition)) {
-	 nextVelocity = vectorAdd(us->velocity, ((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->acceleration);
-	 distance = tryThisWay(g, nextPosition, nextVelocity, DEPTH);
-	 
-	 if(distance < lowerDistance) {
-	    lowerDistance = distance;
-	    bestWay = nextPosition; 
-	 }
+          nextVelocity = vectorAdd(us->velocity, ((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->acceleration);
+          distance = tryThisWay(g, nextPosition, nextVelocity, DEPTH);
+
+          if(distance < lowerDistance) {
+              lowerDistance = distance;
+              bestWay = nextPosition;
+          }
       }
-}
-   return bestWay;   
+   }
+
+   return bestWay;
 }
 
 int tryThisWay(Graph g, Point position, Vector velocity, int iteration) {
-
    int distance;
    int lowerDistance;
    LinkedList accessibleNeighbours;
@@ -51,15 +52,21 @@ int tryThisWay(Graph g, Point position, Vector velocity, int iteration) {
    accessibleNeighbours = graphVertexVelocityGetNeighbors(g, position, velocity);
 
    if(!iteration) {
-      return graphVertexGetDistance(g, position);
+       return graphVertexGetDistance(g, position);
    }
-   
-   while (LinkedListMoveCurrentNext(accessibleNeighbours)) {
-      distance = tryThisWay(g, ((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->to, vectorAdd(velocity,((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->acceleration) , iteration-1);
 
-      if(distance < lowerDistance) {
-	 lowerDistance = distance; 
-      }      
+   if (raceIsArrival(g->racetrack, position)) {
+       return 0-iteration;
    }
+
+   LinkedListResetCurrent(accessibleNeighbours);
+   while (LinkedListMoveCurrentNext(accessibleNeighbours)) {
+       distance = tryThisWay(g, ((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->to, vectorAdd(velocity,((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->acceleration) , iteration - 1);
+
+       if(distance < lowerDistance) {
+          lowerDistance = distance;
+       }
+   }
+
    return lowerDistance;
 }

@@ -15,6 +15,7 @@
 #include <antColony.h>
 #include <assert.h>
 #include <limits.h>
+#include <depthFindWay.h>
 
 #define _race this->racetrack
 #define _graph this->graph
@@ -133,7 +134,7 @@ Vector getBestDirection(RaceManager this) {
     Point next;
     Vector acceleration;
 
-    next = getNext(this);
+    next = depthGetWay(_graph, &_ourDriver, _otherDrivers);
 
     acceleration = driverGetNeededAcceleration(&_ourDriver, next);
 
