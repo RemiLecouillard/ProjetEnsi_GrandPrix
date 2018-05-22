@@ -31,10 +31,24 @@
 
 #define MIN_PHEROMONE 10
 
+/**
+ *
+ */
 typedef struct antcolony *AntColony;
 
+/**
+ *
+ * @param graph
+ * @param nest
+ * @param walls
+ * @return
+ */
 AntColony newAntColony(Graph graph, Driver *nest, Driver walls[]);
 
+/**
+ *
+ * @param this
+ */
 void ACsearchPath(AntColony this);
 
 #endif //PROJETENSI_GRANDPRIX_ANTCOLONY_H

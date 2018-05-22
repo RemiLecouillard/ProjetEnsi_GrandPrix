@@ -74,37 +74,133 @@ struct edgevelocity {
     int boostCost;
 };
 
+/**
+ *
+ * @param racetrack
+ * @return
+ */
 Graph newGraph(Racetrack racetrack);
 
+/**
+ *
+ * @param graph
+ * @param coord
+ * @param dist
+ */
 void graphVertexSetDistance(Graph graph,Point coord,int dist);
 
+/**
+ *
+ * @param graph
+ * @param coord
+ * @return
+ */
 int graphVertexGetDistance(Graph graph,Point coord);
 
+/**
+ *
+ * @param graph
+ * @param coord
+ * @param prevCoord
+ */
 void graphVertexSetPrevious(Graph graph,Point coord,Point prevCoord);
 
+/**
+ *
+ * @param graph
+ * @param coord
+ * @return
+ */
 Point graphVertexGetPrevious(Graph graph,Point coord);
 
+/**
+ *
+ * @param graph
+ * @param point
+ * @return
+ */
 LinkedList graphVertexGetNeighbors(Graph graph,Point point);
 
-int graphVertexIsInQueue(Graph,Point);
+/**
+ *
+ * @param graph
+ * @param p
+ * @return
+ */
+int graphVertexIsInQueue(Graph graph,Point p);
 
-void graphVertexSetInQueue(Graph,Point);
+/**
+ *
+ * @param graph
+ * @param p
+ */
+void graphVertexSetInQueue(Graph graph,Point p);
 
-void graphVertexSetDijkstraPath(Graph, Point, int);
+/**
+ *
+ * @param graph
+ * @param p
+ * @param bool
+ */
+void graphVertexSetDijkstraPath(Graph graph, Point p, int bool);
 
-int graphVertexIsDijkstraPath(Graph, Point);
+/**
+ *
+ * @param graph
+ * @param p
+ * @return
+ */
+int graphVertexIsDijkstraPath(Graph graph, Point p);
 
-void graphInitDijkstra(Graph);
+/**
+ *
+ * @param graph
+ */
+void graphInitDijkstra(Graph graph);
 
+/**
+ *
+ * @param this
+ * @param from
+ * @param velocity
+ * @return
+ */
 LinkedList graphVertexVelocityGetNeighbors(Graph this, Point from, Vector velocity);
 
+/**
+ *
+ * @param this
+ * @param foreach
+ */
 void graphVertexVelocityForEach(Graph this, void (*foreach)(VertexVelocity));
 
 #ifdef ANT
+/**
+ *
+ * @param this
+ * @param from
+ * @param velocity
+ * @param to
+ * @return
+ */
 Vector graphGetDirectionWithMostPheromone(Graph this, Point from, Vector velocity, Point *to);
 
+/**
+ *
+ * @param this
+ * @param from
+ * @param velocity
+ * @return
+ */
 int graphVertexVelocityGetPheromone(Graph this, Point from, Vector velocity);
 
+/**
+ *
+ * @param this
+ * @param from
+ * @param velocity
+ * @param pheromone
+ */
 void graphVertexVelocitySetPheromone(Graph this, Point from, Vector velocity, int pheromone);
 #endif
 

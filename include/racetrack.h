@@ -38,22 +38,77 @@ struct race {
     char** array;
 };
 
+/**
+ *
+ * @return
+ */
 Racetrack newRacetrack();
 
+/**
+ *
+ * @param racetrack
+ * @return
+ */
 LinkedList raceGetArrival(Racetrack racetrack);
 
+/**
+ *
+ * @param racetrack
+ * @param point
+ * @return
+ */
 LinkedList raceGetPossibleDestination(Racetrack racetrack, Point point);
 
-int raceGetNodeCost(Racetrack, Point, Point);
+/**
+ *
+ * @param race
+ * @param from
+ * @param to
+ * @return
+ */
+int raceGetNodeCost(Racetrack race, Point from, Point to);
 
-int raceIsValidPosition(Racetrack, Point);
+/**
+ *
+ * @param race
+ * @param p
+ * @return
+ */
+int raceIsValidPosition(Racetrack race, Point p);
 
-int raceIsArrival(Racetrack, Point);
+/**
+ *
+ * @param race
+ * @return
+ */
+int raceIsArrival(Racetrack race, Point);
 
+/**
+ *
+ * @param race
+ * @param coord
+ * @param velocity
+ * @param acceleration
+ * @return
+ */
 int raceGasolineCost(Racetrack race, Point coord, Vector velocity, Vector acceleration);
 
+/**
+ *
+ * @param race
+ * @param from
+ * @param to
+ * @return
+ */
 int raceIsPathPosssible(Racetrack race, Point from, Point to);
 
+/**
+ *
+ * @param from
+ * @param walls
+ * @param to
+ * @return
+ */
 int raceNoCollision(Point from, Driver walls[], Point to);
 
 #endif //PROJETENSI_GRANDPRIX_RACETRACK_H

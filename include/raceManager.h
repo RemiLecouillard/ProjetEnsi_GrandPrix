@@ -29,10 +29,21 @@
 #include "racetrack.h"
 #include "driver.h"
 
+/**
+ *
+ */
 typedef struct racemanager *RaceManager;
 
+/**
+ *
+ * @return
+ */
 RaceManager newRaceManager();
 
+/**
+ *
+ * @param this
+ */
 void RaceManagerMainLoop(RaceManager this);
 
 #endif //PROJETENSI_GRANDPRIX_RACEMANAGER_H

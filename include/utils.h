@@ -29,8 +29,14 @@
 #include <stdio.h>
 #include <LinkedList.h>
 
+/**
+ *
+ */
 typedef struct point Point;
 
+/**
+ *
+ */
 typedef struct vector Vector;
 
 struct point {
@@ -43,22 +49,70 @@ struct vector {
     int y;
 };
 
+/**
+ *
+ */
 FILE *debug;
 
+/**
+ *
+ * @param x
+ * @param y
+ * @return
+ */
 Point *newPoint(int x, int y);
 
+/**
+ *
+ * @param x
+ * @param y
+ * @return
+ */
 Point createPoint(int x, int y);
 
+/**
+ *
+ * @param x
+ * @param y
+ * @return
+ */
 Vector *newVector(int x, int y);
 
+/**
+ *
+ * @param x
+ * @param y
+ * @return
+ */
 Vector createVector(int x, int y);
 
+/**
+ *
+ * @return
+ */
 int PointEquals(Point, Point);
 
+/**
+ *
+ * @param point
+ * @param list
+ * @return
+ */
 int pointIsIn(Point point, LinkedList list);
 
+/**
+ *
+ * @param a
+ * @param b
+ * @return
+ */
 Vector vectorAdd(Vector a, Vector b);
 
+/**
+ *
+ * @param a
+ * @return
+ */
 float vectorNorm(Vector a);
 
 #endif //PROJETENSI_GRANDPRIX_UTIL_H

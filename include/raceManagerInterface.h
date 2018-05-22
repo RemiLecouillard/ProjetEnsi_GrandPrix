@@ -29,8 +29,6 @@
 #include "utils.h"
 #include "racetrack.h"
 
-typedef struct racemanagerinterface *RaceManagerInterface;
-
 /**
  *
  * @param race

@@ -45,8 +45,18 @@ struct driver{
  */
 Vector driverGetNeededAcceleration(Driver *driver, Point point);
 
+/**
+ *
+ * @param gasoline
+ * @return
+ */
 Driver createDriver(int gasoline);
 
+/**
+ *
+ * @param driver
+ * @param acceleration
+ */
 void driverAddAcceleration(Driver *driver, Vector acceleration);
 
 #endif //PROJETENSI_GRANDPRIX_DRIVER_H

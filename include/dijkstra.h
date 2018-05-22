@@ -26,12 +26,31 @@
 #ifndef PROJETENSI_GRANDPRIX_DIJKSTRA_H
 #define PROJETENSI_GRANDPRIX_DIJKSTRA_H
 
+/**
+ *
+ */
 typedef struct dijkstra *Dijkstra;
 
+/**
+ *
+ * @param graph
+ * @param source
+ * @param destination
+ * @param walls
+ * @return
+ */
 struct dijkstra *newDijkstra(Graph graph,LinkedList source,LinkedList destination, Driver walls[]);
 
+/**
+ *
+ * @param this
+ */
 void dijkstraFindShortestPath(struct dijkstra *this);
 
+/**
+ *
+ * @param this
+ */
 void dijkstraDelete(struct dijkstra *this);
 
 #endif //PROJETENSI_GRANDPRIX_DIJKSTRA_H
