@@ -117,7 +117,10 @@ Vector getBestDirection(RaceManager this) {
 
     next = depthGetWay(_graph, &_ourDriver, _otherDrivers);
 
-    acceleration = driverGetNeededAcceleration(&_ourDriver, next);
+    if (PointEquals(createPoint(-1, -1), next))
+        acceleration = createVector(0, 0);
+    else
+        acceleration = driverGetNeededAcceleration(&_ourDriver, next);
 
     _ourDriver.gasoline -= raceGasolineCost(_race, _ourDriver.position, _ourDriver.velocity, acceleration);
 
