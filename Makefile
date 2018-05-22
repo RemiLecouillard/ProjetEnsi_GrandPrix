@@ -6,7 +6,7 @@ OBJDIR = obj/
 LIB = -l/lib/CCollections
 SRC = $(wildcard $(SRCDIR)*.c)
 OBJ  = $(SRC:$(SRCDIR)%.c=$(OBJDIR)%.o)
-outputdir = ../GrandPrix2018/drivers/
+outputdir = bin/
 
 .PHONY: clean all
 
