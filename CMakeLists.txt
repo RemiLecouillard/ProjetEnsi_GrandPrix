@@ -10,7 +10,7 @@ set(SOURCE_FILES
         include/raceManagerInterface.h
         include/utils.h
         src/main.c src/depthFindWay.c include/depthFindWay.h
-        src/raceManagerInterface.c src/graph.c include/graph.h src/utils.c src/raceManager.c include/raceManager.h src/racetrack.c include/racetrack.h src/driver.c include/driver.h src/dijkstra.c include/dijkstra.h src/antColony.c include/antColony.h src/possibilityTree.c include/possibilityTree.h)
+        src/raceManagerInterface.c src/graph.c include/graph.h src/utils.c src/raceManager.c include/raceManager.h src/racetrack.c include/racetrack.h src/driver.c include/driver.h src/dijkstra.c include/dijkstra.h src/antColony.c include/antColony.h)
 
 add_executable(ProjetEnsi_GrandPrix ${SOURCE_FILES})
 

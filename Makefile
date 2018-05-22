@@ -19,7 +19,7 @@ lib/libCCollections.a :
 	@make -C CCollections/
 
 $(OBJDIR)%.o: $(SRCDIR)%.c
-	$(CC) -o $@ -c $< -I include/ -I CCollections/include $(CFLAGS) -O2
+	@$(CC) -o $@ -c $< -I include/ -I CCollections/include $(CFLAGS) -O2
 
 clean :
 	rm -f $(OBJDIR)*.o $(OBJDIR)*~ lib/*.a

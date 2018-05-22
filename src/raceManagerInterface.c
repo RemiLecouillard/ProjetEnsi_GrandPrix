@@ -36,14 +36,16 @@ void readUntilEndOfLine();
 
 void init(Racetrack race,int* gasoline) {
     int i;
+    int ignored __attribute__((unused));
 
-    (void)fscanf(stdin, "%d %d %d", &race->width, &race->height, gasoline);
+    if (fscanf(stdin, "%d %d %d", &race->width, &race->height, gasoline) == EOF)
+        exit(1);
     readUntilEndOfLine();
 
     race->array = malloc(sizeof(char*) * race->height);
     for (i = 0; i < race->height; i++) {
         race->array[i] = malloc(sizeof(char) * race->width);
-        (void)fread(race->array[i], sizeof(char),race->width, stdin);
+        ignored = fread(race->array[i], sizeof(char),race->width, stdin);
         readUntilEndOfLine();
     }
 
@@ -52,8 +54,9 @@ void init(Racetrack race,int* gasoline) {
 int updatePositions(Driver* myDriver,Driver* otherDriver1,Driver* otherDriver2) {
     fflush(debug);
     Point pos;
-    (void)fscanf(stdin, "%d %d\t%d %d\t%d %d", &pos.x, &pos.y, &otherDriver1->position.x,
-           &otherDriver1->position.y, &otherDriver2->position.x, &otherDriver2->position.y);
+    if (fscanf(stdin, "%d %d\t%d %d\t%d %d", &pos.x, &pos.y, &otherDriver1->position.x,
+           &otherDriver1->position.y, &otherDriver2->position.x, &otherDriver2->position.y) == EOF)
+        exit(1);
     readUntilEndOfLine();
     if (!PointEquals(createPoint(-1, -1), myDriver->position))
         myDriver->velocity = createVector(pos.x - myDriver->position.x, pos.y - myDriver->position.y);
