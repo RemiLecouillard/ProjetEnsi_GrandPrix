@@ -155,7 +155,7 @@ int raceGetNodeCost(Racetrack race, Point from, Point to) {
     int cost;
     cost = 10;
     if (from.x != to.x && from.y != to.y) {
-        cost += 3;
+        cost -= 5;
     }
 
     if (race->array[to.y][to.x] == SAND) {

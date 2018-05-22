@@ -15,7 +15,7 @@
 #include <antColony.h>
 #include <assert.h>
 #include <limits.h>
-#include <depthFindWay.h>
+#include "depthFindWay.h"
 
 #define _race this->racetrack
 #define _graph this->graph
@@ -62,6 +62,7 @@ RaceManager newRaceManager() {
     dijkstraFindShortestPath(dijkstra);
     dijkstraDelete(dijkstra);
     displayDebug(this, gasoline);
+    TotalGasoline = _ourDriver.gasoline;
 
     return this;
 }
@@ -96,9 +97,12 @@ void displayTurn(RaceManager this, Point next, Vector acceleration) {
 void RaceManagerMainLoop(RaceManager this) {
     Vector newAcceleration;
     int isFinished;
-
+    TotalDistance = -1;
     do {
         isFinished = updatePositions(&_ourDriver, &_otherDrivers[0], &_otherDrivers[1]);
+        if (TotalDistance == -1) {
+            TotalDistance = graphVertexGetDistance(_graph, _ourDriver.position);
+        }
         newAcceleration = getBestDirection(this);
         sendOrder(newAcceleration);
     } while(!isFinished);
@@ -106,42 +110,18 @@ void RaceManagerMainLoop(RaceManager this) {
 
 }
 
-Point getNext(RaceManager this) {
-    int best, tmp;
-    Edge edge;
-    LinkedList dest;
-    Point bestDest;
-
-    best = INT_MAX;
-    dest = graphVertexGetNeighbors(_graph, _ourDriver.position);
-    LinkedListResetCurrent(dest);
-
-    while(LinkedListMoveCurrentNext(dest)) {
-        edge = LinkedListGetCurrent(dest);
-
-        tmp = graphVertexGetDistance(_graph, edge->to);
-
-        if (tmp < best) {
-            bestDest = edge->to;
-        }
-    }
-
-    return bestDest;
-}
-
 #ifndef ANT
 Vector getBestDirection(RaceManager this) {
     Point next;
-    clock_t begin;
     Vector acceleration;
 
-    begin = clock();
     next = depthGetWay(_graph, &_ourDriver, _otherDrivers);
-    fprintf(debug, "time taken %1.5f\n",  ((float)(clock() - begin) / CLOCKS_PER_SEC));
+
     acceleration = driverGetNeededAcceleration(&_ourDriver, next);
+
     _ourDriver.gasoline -= raceGasolineCost(_race, _ourDriver.position, _ourDriver.velocity, acceleration);
 
-    displayTurn(this, next, acceleration);
+    //displayTurn(this, next, acceleration);
 
     return acceleration;
 }

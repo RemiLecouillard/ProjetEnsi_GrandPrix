@@ -27,39 +27,47 @@ Possibility createPossibility(int distance,int gasoline);
 
 int isBetter(Possibility a, Possibility b);
 
+float getSegmentValue(int distance,int gasoline);
+
+float raceValue;
+
+int startDistance;
+
+int startGasoline;
+
 Point depthGetWay(Graph g, Driver* us, Driver others[]) {
-   Point nextPosition; 
-   Point bestWay = createPoint(-1, -1);
-   Vector nextVelocity;
-   LinkedList accessibleNeighbours;
-   Possibility possibility, bestPossibility;
-   int gasolineCost;
+    Point nextPosition;
+    Point bestWay = createPoint(-1, -1);
+    Vector nextVelocity;
+    LinkedList accessibleNeighbours;
+    Possibility possibility, bestPossibility;
+    int gasolineCost;
+    raceValue = TotalDistance/TotalGasoline;
+    bestPossibility = createPossibility(INT_MAX, INT_MAX);
+    accessibleNeighbours = graphVertexVelocityGetNeighbors(g, us->position, us->velocity);
 
+    startDistance = graphVertexGetDistance(g, us->position);
+    startGasoline = us->gasoline;
+    LinkedListResetCurrent(accessibleNeighbours);
+    while (LinkedListMoveCurrentNext(accessibleNeighbours)) {
+        nextPosition = ((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->to;
 
-   bestPossibility = createPossibility(INT_MAX, INT_MAX);
-   accessibleNeighbours = graphVertexVelocityGetNeighbors(g, us->position, us->velocity);
+        if(raceNoCollision(us->position, others, nextPosition)) {
 
-   LinkedListResetCurrent(accessibleNeighbours);
-   while (LinkedListMoveCurrentNext(accessibleNeighbours)) {
-      
-      nextPosition = ((EdgeVelocity) LinkedListGetCurrent(accessibleNeighbours))->to;
+            nextVelocity = vectorAdd(us->velocity, _acceleration);
+            if (graphVertexGetDistance(g, _to) >= graphVertexGetDistance(g, us->position))
+                continue;
+            gasolineCost = us->gasoline - raceGasolineCost(g->racetrack, us->position, us->velocity, _acceleration);
+            possibility = tryThisWay(g, nextPosition, nextVelocity, DEPTH, gasolineCost);
 
-      if(raceNoCollision(us->position, others, nextPosition)) {
+            if(isBetter(possibility, bestPossibility)) {
+                bestPossibility = possibility;
+                bestWay = nextPosition;
+            }
+        }
+    }
 
-          nextVelocity = vectorAdd(us->velocity, _acceleration);
-          if (graphVertexGetDistance(g, _to) >= graphVertexGetDistance(g, us->position))
-              continue;
-          gasolineCost = us->gasoline - raceGasolineCost(g->racetrack, us->position, us->velocity, _acceleration);
-          possibility = tryThisWay(g, nextPosition, nextVelocity, DEPTH, gasolineCost);
-
-          if(isBetter(possibility, bestPossibility)) {
-              bestPossibility = possibility;
-              bestWay = nextPosition;
-          }
-      }
-   }
-
-   return bestWay;
+    return bestWay;
 }
 
 Possibility tryThisWay(Graph g, Point position, Vector velocity, int iteration, int gasoline) {
@@ -78,6 +86,8 @@ Possibility tryThisWay(Graph g, Point position, Vector velocity, int iteration, 
     }
 
    if(!iteration) {
+       if (getSegmentValue(graphVertexGetDistance(g, position), gasoline) < raceValue*0.9)
+           return createPossibility(INT_MAX, INT_MAX);
        return createPossibility(graphVertexGetDistance(g, position), gasoline);
    }
 
@@ -106,7 +116,6 @@ Possibility createPossibility(int distance,int gasoline) {
 }
 
 int isBetter(Possibility a, Possibility b) {
-
     if (a.distance < b.distance) {
         return 1;
     } else if (a.distance > b.distance) {
@@ -119,4 +128,8 @@ int isBetter(Possibility a, Possibility b) {
         return 0;
     }
     return 1;
+}
+
+float getSegmentValue(int distance,int gasoline) {
+    return (float) (startDistance-distance)/(startGasoline-gasoline);
 }
